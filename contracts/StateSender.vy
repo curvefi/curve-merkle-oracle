@@ -44,9 +44,9 @@ def send_blockhash(_block_number: uint256, _chain_id: uint256):
     @param _block_number The block number to push the blockhash of
     @param _chain_id The chain id of the chain to push the data to
     """
-    last_sent: uint256 = self.last_sent[_chain_id]
+    last_sent: uint256 = self._last_sent[_chain_id]
     # must wait 1024 blocks since the last block sent before sending a new block
-    assert self.last_sent[_chain_id] < block.number - 1024  # dev: sending too soon
+    assert self._last_sent[_chain_id] < block.number - 1024  # dev: sending too soon
     # must send a block that has >40 confirmations
     assert block.number - _block_number > 40  # dev: block too fresh
     # must send a block that is <256 blocks old
@@ -57,7 +57,7 @@ def send_blockhash(_block_number: uint256, _chain_id: uint256):
     assert RootGaugeFactory(ROOT_GAUGE_FACTORY).get_bridger(_chain_id) != ZERO_ADDRESS  # dev: invalid chain_id
 
     # update the last block sent
-    self.last_sent[_chain_id] = _block_number
+    self._last_sent[_chain_id] = _block_number
 
     AnyCallProxy(ANYCALL_PROXY).anyCall(
         self,
