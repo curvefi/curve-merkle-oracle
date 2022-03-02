@@ -5,7 +5,4 @@ compiler:
       enabled: true
       runs: 200
 
-networks:
-    default: mainnet-fork
-
 autofetch_sources: true
