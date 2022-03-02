@@ -4,9 +4,9 @@
  * Copied from https://github.com/lorenzb/proveth/blob/c74b20e/onchain/ProvethVerifier.sol
  * with minor performance and code style-related modifications.
  */
-pragma solidity 0.6.12;
+pragma solidity >=0.8.12;
 
-import {RLPReader} from "hamdiallam/Solidity-RLP@2.0.5/contracts/RLPReader.sol";
+import {RLPReader} from "./RLPReader.sol";
 
 
 library MerklePatriciaProofVerifier {
