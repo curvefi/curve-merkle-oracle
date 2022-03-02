@@ -128,7 +128,7 @@ def generate_eth_get_proof_params(_user: address) -> (address, uint256[20], uint
     # `VotingEscrow.slope_changes(uint256)`
     # Slots for the 8 weeks worth of slope changes
     last_point: Point = VotingEscrow(VOTING_ESCROW).point_history(global_epoch)
-    start_time: uint256 = (last_point.ts / WEEK) * WEEK
+    start_time: uint256 = (last_point.ts / WEEK) * WEEK + WEEK
 
     positions[12] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time)), uint256)
     positions[13] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK)), uint256)
