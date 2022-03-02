@@ -68,6 +68,11 @@ contract VotingEscrowStateOracle {
         _eth_blockhash[0] = GENESIS_BLOCKHASH;
         emit SetBlockhash(0, GENESIS_BLOCKHASH);
 
+        // Mar-02-2022 07:06:57 PM +UTC
+        _eth_blockhash[14309414] = 0xa460e43297d3f7a92ee5dd34ee39a20b941dfc805a7dbfa99e892214d5da026c;
+        emit SetBlockhash(14309414, 0xa460e43297d3f7a92ee5dd34ee39a20b941dfc805a7dbfa99e892214d5da026c);
+        last_eth_block_number = 14309414;
+
         owner = msg.sender;
         emit TransferOwnership(address(0), msg.sender);
 
