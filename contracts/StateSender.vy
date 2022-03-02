@@ -101,10 +101,8 @@ def generate_eth_get_proof_params(_user: address) -> (address, uint256[20], uint
     global_epoch: uint256 = VotingEscrow(VOTING_ESCROW).epoch()
     point_history_pos: uint256 = convert(keccak256(_abi_encode(convert(keccak256(_abi_encode(convert(4, bytes32))), uint256) + global_epoch)), uint256)
 
-    positions[1] = point_history_pos
-    positions[2] = point_history_pos + 1
-    positions[3] = point_history_pos + 2
-    positions[4] = point_history_pos + 3
+    for i in range(4):
+        positions[1 + i] = point_history_pos + i
 
     # `VotingEscrow.user_point_epoch(address)`
     positions[5] = convert(keccak256(_abi_encode(convert(6, bytes32), _user)), uint256)
@@ -113,10 +111,8 @@ def generate_eth_get_proof_params(_user: address) -> (address, uint256[20], uint
     user_epoch: uint256 = VotingEscrow(VOTING_ESCROW).user_point_epoch(_user)
     user_point_history_pos: uint256 = convert(keccak256(_abi_encode(convert(keccak256(_abi_encode(keccak256(_abi_encode(convert(5, bytes32), _user)))), uint256) + user_epoch)), uint256)
 
-    positions[6] = user_point_history_pos
-    positions[7] = user_point_history_pos + 1
-    positions[8] = user_point_history_pos + 2
-    positions[9] = user_point_history_pos + 3
+    for i in range(4):
+        positions[6 + i] = user_point_history_pos + i
 
     # `VotingEscrow.locked(address)`
     # uint256 locked_pos = uint256(keccak256());
@@ -128,15 +124,9 @@ def generate_eth_get_proof_params(_user: address) -> (address, uint256[20], uint
     # `VotingEscrow.slope_changes(uint256)`
     # Slots for the 8 weeks worth of slope changes
     last_point: Point = VotingEscrow(VOTING_ESCROW).point_history(global_epoch)
-    start_time: uint256 = (last_point.ts / WEEK) * WEEK
+    start_time: uint256 = (last_point.ts / WEEK) * WEEK + WEEK
 
-    positions[12] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time)), uint256)
-    positions[13] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK)), uint256)
-    positions[14] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK * 2)), uint256)
-    positions[15] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK * 3)), uint256)
-    positions[16] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK * 4)), uint256)
-    positions[17] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK * 5)), uint256)
-    positions[18] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK * 6)), uint256)
-    positions[19] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK * 7)), uint256)
+    for i in range(8):
+        positions[12 + i] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK * i)), uint256)
 
     return VOTING_ESCROW, positions, block.number

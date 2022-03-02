@@ -196,9 +196,10 @@ contract VotingEscrowStateOracle {
         // Remaining proofs are for 2 months worth of slope changes
         // starting from the week beginning the last global point
         Verifier.SlotValue[8] memory slot_slope_changes;
+        uint256 start_time = (slot_point_history[2].value / WEEK) * WEEK + WEEK;
         for (uint256 i = 0; i < 8; i++) {
             slot_slope_changes[i] = Verifier.extractSlotValueFromProof(
-                keccak256(abi.encode(keccak256(abi.encode(7, (slot_point_history[2].value / WEEK) * WEEK + WEEK * i)))),
+                keccak256(abi.encode(keccak256(abi.encode(7, start_time + WEEK * i)))),
                 ve_account.storageRoot,
                 proofs[13 + i].toList()
             );
@@ -211,7 +212,6 @@ contract VotingEscrowStateOracle {
             if (slot_epoch.value > epoch) {
                 epoch = slot_epoch.value;
 
-                uint256 start_time = (slot_point_history[2].value / WEEK) * WEEK;
                 for (uint256 i = 0; i < 8; i++) {
                     slope_changes[start_time + WEEK * i] = abi.decode(abi.encode(slot_slope_changes[i].value), (int128));
                 }
