@@ -58,15 +58,23 @@ contract VotingEscrowStateOracle {
 
     mapping(uint256 => int128) public slope_changes;
     mapping(address => LockedBalance) public locked;
+    mapping(bytes32 => bool) public submitted_hashes;
 
     /// Log a blockhash update
     event SetBlockhash(uint256 _eth_block_number, bytes32 _eth_blockhash);
     /// Log a transfer of ownership
     event TransferOwnership(address _old_owner, address _new_owner);
+    /// Log a proof submission
+    event SubmittedState(address _user, bytes32 blockhash, bytes32 proofhash);
 
     constructor(address _anycall) {
         _eth_blockhash[0] = GENESIS_BLOCKHASH;
         emit SetBlockhash(0, GENESIS_BLOCKHASH);
+
+        // Mar-02-2022 07:06:57 PM +UTC
+        _eth_blockhash[14309414] = 0xa460e43297d3f7a92ee5dd34ee39a20b941dfc805a7dbfa99e892214d5da026c;
+        emit SetBlockhash(14309414, 0xa460e43297d3f7a92ee5dd34ee39a20b941dfc805a7dbfa99e892214d5da026c);
+        last_eth_block_number = 14309414;
 
         owner = msg.sender;
         emit TransferOwnership(address(0), msg.sender);
@@ -241,6 +249,8 @@ contract VotingEscrowStateOracle {
                 slot_user_point_history[3].value // blk
             );
         }
+
+        emit SubmittedState(_user, block_header.hash, keccak256(_proof_rlp));
     }
 
     /**
@@ -276,6 +286,7 @@ contract VotingEscrowStateOracle {
         if (_eth_block_number > last_eth_block_number) {
             last_eth_block_number = _eth_block_number;
         }
+
     }
 
     /**

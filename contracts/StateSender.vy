@@ -33,7 +33,7 @@ VOTING_ESCROW: constant(address) = 0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2
 
 
 # chain_id => last block number sent
-last_sent: public(HashMap[uint256, uint256])
+_last_sent: HashMap[uint256, uint256]
 
 
 @external
@@ -44,9 +44,9 @@ def send_blockhash(_block_number: uint256, _chain_id: uint256):
     @param _block_number The block number to push the blockhash of
     @param _chain_id The chain id of the chain to push the data to
     """
-    last_sent: uint256 = self.last_sent[_chain_id]
+    last_sent: uint256 = self._last_sent[_chain_id]
     # must wait 1024 blocks since the last block sent before sending a new block
-    assert self.last_sent[_chain_id] < block.number - 1024  # dev: sending too soon
+    assert self._last_sent[_chain_id] < block.number - 1024  # dev: sending too soon
     # must send a block that has >40 confirmations
     assert block.number - _block_number > 40  # dev: block too fresh
     # must send a block that is <256 blocks old
@@ -57,7 +57,7 @@ def send_blockhash(_block_number: uint256, _chain_id: uint256):
     assert RootGaugeFactory(ROOT_GAUGE_FACTORY).get_bridger(_chain_id) != ZERO_ADDRESS  # dev: invalid chain_id
 
     # update the last block sent
-    self.last_sent[_chain_id] = _block_number
+    self._last_sent[_chain_id] = _block_number
 
     AnyCallProxy(ANYCALL_PROXY).anyCall(
         self,
@@ -130,3 +130,16 @@ def generate_eth_get_proof_params(_user: address) -> (address, uint256[20], uint
         positions[12 + i] = convert(keccak256(_abi_encode(convert(7, bytes32), start_time + WEEK * i)), uint256)
 
     return VOTING_ESCROW, positions, block.number
+
+
+@view
+@external
+def get_last_block_number_sent(_chain_id: uint256) -> uint256:
+    """
+    @notice Get the last block number which had its blockhash sent to `_chain_id`
+    @param _chain_id The chain id of interest
+    """
+    last_block: uint256 = self._last_sent[_chain_id]
+    if last_block == 0:
+        last_block = 14309414
+    return last_block
